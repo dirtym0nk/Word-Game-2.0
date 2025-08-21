@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра в слова</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Страница настроек -->
+        <div id="settings-page" class="page active">
+            <div class="container">
+                <div class="settings-card">
+                    <h1>Игра в слова</h1>
+                    <p class="subtitle">Настройте параметры игры</p>
+                    
+                    <!-- Выбор языка -->
+                    <div class="form-group">
+                        <label for="language-select" class="form-label">Язык алфавита</label>
+                        <select id="language-select" class="form-control">
+                            <option value="russian">Русский</option>
+                            <option value="english">English</option>
+                        </select>
+                    </div>
+
+                    <!-- Исключение букв -->
+                    <div class="form-group">
+                        <label class="form-label">Исключить буквы</label>
+                        <div id="letters-grid" class="letters-grid"></div>
+                    </div>
+
+                    <!-- Время раунда -->
+                    <div class="form-group">
+                        <label for="time-slider" class="form-label">Время раунда: <span id="time-display">60</span> секунд</label>
+                        <input type="range" id="time-slider" class="time-slider" min="30" max="180" value="60" step="10">
+                        <div class="slider-labels">
+                            <span>30с</span>
+                            <span>180с</span>
+                        </div>
+                    </div>
+
+                    <!-- Игроки -->
+                    <div class="form-group">
+                        <label for="player-name-input" class="form-label">Игроки</label>
+                        <div class="player-input-group">
+                            <input type="text" id="player-name-input" class="form-control" placeholder="Введите имя игрока" maxlength="20">
+                            <button type="button" id="add-player-btn" class="btn btn--primary">Добавить</button>
+                        </div>
+                        <div id="players-list" class="players-list"></div>
+                    </div>
+
+                    <button type="button" id="start-game-btn" class="btn btn--primary btn--lg btn--full-width">Начать игру</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Игровая страница -->
+        <div id="game-page" class="page hidden">
+            <div class="container">
+                <div class="game-layout">
+                    <!-- Игровая панель -->
+                    <div class="game-panel">
+                        <div class="current-player-card">
+                            <h2>Ходит: <span id="current-player-name"></span></h2>
+                            <div class="player-stats">
+                                <span>Раунд: <strong id="current-round">1</strong></span>
+                                <span>Очки игрока: <strong id="current-player-score">0</strong></span>
+                            </div>
+                        </div>
+
+                        <div class="current-letter-card">
+                            <div class="letter-display" id="current-letter">А</div>
+                            <div class="timer-display" id="timer">01:00</div>
+                        </div>
+
+                        <!-- Кнопки управления очками -->
+                        <div class="points-control-card" id="points-control" style="display: none;">
+                            <h3>Управление очками</h3>
+                            <div class="points-buttons">
+                                <button type="button" id="minus-point-btn" class="btn btn--outline btn--lg">-1 очко</button>
+                                <div class="current-round-score">
+                                    <span>Очки за раунд: <strong id="round-points">0</strong></span>
+                                </div>
+                                <button type="button" id="plus-point-btn" class="btn btn--primary btn--lg">+1 очко</button>
+                            </div>
+                        </div>
+
+                        <!-- Поле для заметок -->
+                        <div class="notes-card" id="notes-card" style="display: none;">
+                            <label for="notes-input" class="form-label">Заметки (спорные слова)</label>
+                            <textarea id="notes-input" class="form-control" placeholder="Запишите спорные слова для обсуждения..." rows="3"></textarea>
+                        </div>
+
+                        <!-- Кнопки управления игрой -->
+                        <div class="game-controls">
+                            <button type="button" id="start-round-btn" class="btn btn--primary btn--lg">Начать раунд</button>
+                            <button type="button" id="end-round-btn" class="btn btn--secondary" style="display: none;">Завершить раунд</button>
+                            <button type="button" id="end-game-btn" class="btn btn--outline">Завершить игру</button>
+                        </div>
+                    </div>
+
+                    <!-- Боковая панель с очками -->
+                    <div class="scoreboard-panel">
+                        <h3>Табло</h3>
+                        <div id="scoreboard" class="scoreboard"></div>
+                        
+                        <div class="game-progress">
+                            <h4>Прогресс игры</h4>
+                            <div class="progress-info">
+                                <div class="progress-item">
+                                    <span>Общий раунд: <strong id="total-round-counter">1</strong></span>
+                                </div>
+                                <div class="progress-item">
+                                    <span>Осталось букв: <strong id="letters-left">32</strong></span>
+                                </div>
+                            </div>
+                            <div class="used-letters">
+                                <h5>Использованные буквы</h5>
+                                <div id="used-letters-display" class="used-letters-list"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Страница результатов -->
+        <div id="results-page" class="page hidden">
+            <div class="container">
+                <div class="results-card">
+                    <h1>Игра завершена!</h1>
+                    
+                    <div class="winner-section">
+                        <div class="winner-crown">👑</div>
+                        <h2>Победитель: <span id="winner-name"></span></h2>
+                        <p class="winner-score">Очки: <span id="winner-score"></span></p>
+                    </div>
+
+                    <div class="final-scoreboard">
+                        <h3>Финальные результаты</h3>
+                        <div id="final-scores" class="final-scores"></div>
+                    </div>
+
+                    <div class="results-actions">
+                        <button type="button" id="new-game-btn" class="btn btn--primary btn--lg">Новая игра</button>
+                        <button type="button" id="change-settings-btn" class="btn btn--outline">Изменить настройки</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
